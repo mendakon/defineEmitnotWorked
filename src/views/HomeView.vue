@@ -1,28 +1,36 @@
 <template>
-  <div class="home">
-    <div v-for="(item, index) of items" :key="item.id">
-      <HelloWorld
-        :msg="item.value"
-        @set-expose-function="(fn) => (componentRefs[index] = fn)"
-      />
-    </div>
+  <div
+    class="home"
+    v-for="item of items"
+    :key="item.id"
+    :ref="setComponentRefs"
+  >
+    <HelloWorld :msg="msg" ref="componentRef" />
   </div>
+  <button @click="onFire">Fire</button>
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, onMounted } from "vue";
+import { ref } from "vue";
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
-const items = ref([
-  { id: 1, value: "Welcome to Your Vue1.js + TypeScript App" },
-  { id: 2, value: "Welcome to Your Vue2.js + TypeScript App" },
-  { id: 3, value: "Welcome to Your Vue3.js + TypeScript App" },
-]);
-const componentRefs: Ref<Array<() => void>> = ref([]);
+const msg = ref("hello world");
+const componentRefs = ref<Array<InstanceType<typeof HelloWorld>>>([]);
 
-onMounted(() => {
-  componentRefs.value.forEach((exposeFunction) => {
-    exposeFunction();
+const items = ref([
+  { id: "001", value: "vue1" },
+  { id: "002", value: "vue2" },
+  { id: "003", value: "vue3" },
+]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function setComponentRefs(el: any) {
+  if (el) {
+    componentRefs.value.push(el as InstanceType<typeof HelloWorld>);
+  }
+}
+function onFire() {
+  componentRefs.value.forEach((componentRef) => {
+    componentRef.exposeFunction();
   });
-});
+}
 </script>

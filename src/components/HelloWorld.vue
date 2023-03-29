@@ -5,23 +5,18 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, onMounted } from "vue";
+import { defineProps, defineExpose } from "vue";
 
 interface Props {
   msg: string;
 }
 const props = defineProps<Props>();
 
-interface Emits {
-  (e: "setExposeFunction", fn: () => void): void;
-}
-const emit = defineEmits<Emits>();
-
-const exposeFunction = () => {
+function exposeFunction() {
   console.log(props.msg);
-};
-onMounted(() => {
-  emit("setExposeFunction", exposeFunction);
+}
+defineExpose({
+  exposeFunction,
 });
 </script>
 
