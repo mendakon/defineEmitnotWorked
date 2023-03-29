@@ -1,18 +1,28 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <div v-for="(item, index) of items" :key="item.id">
+      <HelloWorld
+        :msg="item.value"
+        @set-expose-function="(fn) => (componentRefs[index] = fn)"
+      />
+    </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { ref, Ref, onMounted } from "vue";
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
-export default defineComponent({
-  name: "HomeView",
-  components: {
-    HelloWorld,
-  },
+const items = ref([
+  { id: 1, value: "Welcome to Your Vue1.js + TypeScript App" },
+  { id: 2, value: "Welcome to Your Vue2.js + TypeScript App" },
+  { id: 3, value: "Welcome to Your Vue3.js + TypeScript App" },
+]);
+const componentRefs: Ref<Array<() => void>> = ref([]);
+
+onMounted(() => {
+  componentRefs.value.forEach((exposeFunction) => {
+    exposeFunction();
+  });
 });
 </script>
